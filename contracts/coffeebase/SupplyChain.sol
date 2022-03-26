@@ -1,4 +1,6 @@
-pragma solidity ^0.4.24;
+// SPDX-License-Identifier: MIT
+
+pragma solidity >=0.8.10;
 
 import "../coffeeaccesscontrol/ConsumerRole.sol";
 import "../coffeeaccesscontrol/DistributorRole.sol";
@@ -10,7 +12,7 @@ import "../coffeecore/Ownable.sol";
 contract SupplyChain is Ownable, ConsumerRole, DistributorRole, FarmerRole, RetailerRole {
 
   // Define 'owner'
-  address owner;
+  // owner is defined in the Owenable contract and accessible through owner() method.
 
   // Define a variable called 'upc' for Universal Product Code (UPC)
   uint  upc;
@@ -89,7 +91,7 @@ contract SupplyChain is Ownable, ConsumerRole, DistributorRole, FarmerRole, Reta
     _;
     uint _price = items[_upc].productPrice;
     uint amountToReturn = msg.value - _price;
-    items[_upc].consumerID.transfer(amountToReturn);
+    payable(items[_upc].consumerID).transfer(amountToReturn);
   }
 
   // Define a modifier that checks if an item.state of a upc is Harvested
@@ -143,7 +145,7 @@ contract SupplyChain is Ownable, ConsumerRole, DistributorRole, FarmerRole, Reta
   // In the constructor set 'owner' to the address that instantiated the contract
   // and set 'sku' to 1
   // and set 'upc' to 1
-  constructor() public payable {
+  constructor() payable {
     sku = 1;
     upc = 1;
   }
@@ -155,7 +157,7 @@ contract SupplyChain is Ownable, ConsumerRole, DistributorRole, FarmerRole, Reta
   }
 
   // Define a function 'harvestItem' that allows a farmer to mark an item 'Harvested'
-  function harvestItem(uint _upc, address _originFarmerID, string _originFarmName, string _originFarmInformation, string  _originFarmLatitude, string  _originFarmLongitude, string  _productNotes) public 
+  function harvestItem(uint _upc, address _originFarmerID, string memory _originFarmName, string memory _originFarmInformation, string memory  _originFarmLatitude, string memory _originFarmLongitude, string memory  _productNotes) public 
   {
     // Add the new item as part of Harvest
     Item memory item;
@@ -237,7 +239,7 @@ contract SupplyChain is Ownable, ConsumerRole, DistributorRole, FarmerRole, Reta
     
     // Update the appropriate fields - ownerID, distributorID, itemState
     items[_upc].itemState = State.Sold;
-    items[_upc].ownerId = msg.sender;
+    items[_upc].ownerID = msg.sender;
     items[_upc].distributorID = msg.sender;
 
     // Transfer money to farmer
@@ -274,7 +276,7 @@ contract SupplyChain is Ownable, ConsumerRole, DistributorRole, FarmerRole, Reta
     {
     // Update the appropriate fields - ownerID, retailerID, itemState
     items[_upc].ownerID = msg.sender;
-    items[_upc].consumerID = msg.sender;
+    items[_upc].retailerID = msg.sender;
     items[_upc].itemState = State.Received;
 
     // Emit the appropriate event
@@ -305,10 +307,10 @@ contract SupplyChain is Ownable, ConsumerRole, DistributorRole, FarmerRole, Reta
   uint    itemUPC,
   address ownerID,
   address originFarmerID,
-  string  originFarmName,
-  string  originFarmInformation,
-  string  originFarmLatitude,
-  string  originFarmLongitude
+  string memory originFarmName,
+  string memory originFarmInformation,
+  string memory originFarmLatitude,
+  string memory originFarmLongitude
   ) 
   {
   // Assign values to the 8 parameters
@@ -341,7 +343,7 @@ contract SupplyChain is Ownable, ConsumerRole, DistributorRole, FarmerRole, Reta
   uint    itemSKU,
   uint    itemUPC,
   uint    productID,
-  string  productNotes,
+  string memory productNotes,
   uint    productPrice,
   uint    itemState,
   address distributorID,
@@ -359,7 +361,7 @@ contract SupplyChain is Ownable, ConsumerRole, DistributorRole, FarmerRole, Reta
     distributorID = items[_upc].distributorID;
     retailerID = items[_upc].retailerID;
     consumerID = items[_upc].consumerID;
-    
+
     
   return 
   (
