@@ -1,4 +1,4 @@
-App = {
+var App = {
     web3Provider: null,
     contracts: {},
     emptyAddress: "0x0000000000000000000000000000000000000000",
@@ -62,7 +62,7 @@ App = {
             App.web3Provider = window.ethereum;
             try {
                 // Request account access
-                await window.ethereum.enable();
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
             } catch (error) {
                 // User denied account access...
                 console.error("User denied account access")
@@ -74,7 +74,7 @@ App = {
         }
         // If no injected web3 instance is detected, fall back to Ganache
         else {
-            App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
+            App.web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
         }
 
         App.getMetaskAccountID();
@@ -99,7 +99,7 @@ App = {
 
     initSupplyChain: function () {
         /// Source the truffle compiled smart contracts
-        var jsonSupplyChain='../../build/contracts/SupplyChain.json';
+        var jsonSupplyChain='./SupplyChain.json';
         
         /// JSONfy the smart contracts
         $.getJSON(jsonSupplyChain, function(data) {
